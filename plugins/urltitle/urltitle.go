@@ -27,8 +27,8 @@ func Register(c *irc.Connection) {
 		}, &lib.Command{
 			Private: false,
 			Direct:  false,
-			Command: true,
-			Line:    false,
+			Command: false,
+			Line:    true,
 		}))
 }
 
