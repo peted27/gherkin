@@ -24,7 +24,12 @@ func Register(c *irc.Connection) {
 	c.AddCallback("PRIVMSG", lib.PrivmsgHandler(
 		func(e *irc.Event) {
 			handle(e)
-		}, false, true, false))
+		}, &lib.Command{
+			Private: false,
+			Direct:  false,
+			Command: true,
+			Line:    false,
+		}))
 }
 
 func handle(e *irc.Event) {

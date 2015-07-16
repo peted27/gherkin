@@ -55,7 +55,12 @@ func main() {
 			if strings.HasPrefix(e.Arguments[1], "!ping") {
 				e.Connection.Privmsg(e.Arguments[0], "pong!")
 			}
-		}, false, true, false))
+		}, &lib.Command{
+			Private: false,
+			Direct:  false,
+			Command: true,
+			Line:    false,
+		}))
 
 	// slap plugin
 	bot.AddCallback("PRIVMSG", lib.PrivmsgHandler(
@@ -63,7 +68,12 @@ func main() {
 			if strings.HasPrefix(e.Arguments[1], "!slap") {
 				e.Connection.Action(e.Arguments[0], "slaps "+e.Nick+" around a bit with a large trout!")
 			}
-		}, false, true, false))
+		}, &lib.Command{
+			Private: false,
+			Direct:  false,
+			Command: true,
+			Line:    false,
+		}))
 
 	urltitle.Register(bot)
 
