@@ -26,7 +26,7 @@ func PrivmsgHandler(f func(e *irc.Event), hDirect, hIndirect, hPrivate bool) fun
 		}
 
 		// if handler is configured to handle the event, then pass it on untouched
-		if (hDirect == direct) || (hIndirect == indirect) || (hPrivate == private) {
+		if (hDirect && direct) || (hIndirect && indirect) || (hPrivate && private) {
 			f(e)
 		}
 	}
