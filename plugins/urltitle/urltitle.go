@@ -60,7 +60,8 @@ func handle(e *irc.Event) {
 		title = title[:200]
 	}
 
-	e.Connection.Privmsgf(target, "%s :: %s", link, title)
+	//e.Connection.Privmsgf(target, "%s :: %s", link, title)
+	e.Connection.Privmsgf(target, "<title> :: %s", title)
 }
 
 func GetTitle(url string) (string, error) {
