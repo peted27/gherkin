@@ -39,7 +39,7 @@ func handle(e *irc.Event) {
 		return
 	}
 
-	r, err := regexp.Compile("^s/([^/]+)/([^/]+)(?:/g?)?")
+	r, err := regexp.Compile("^s/([^/]+)/([^/]*)/g?")
 	if err != nil {
 		e.Connection.Privmsg(channel, fmt.Sprintf("error: %s", err))
 		return
