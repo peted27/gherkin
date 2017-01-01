@@ -53,7 +53,7 @@ func main() {
 	// pong! plugin
 	bot.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
-			if !lib.IsCommand(e) {
+			if !lib.IsCommandMessage(e) {
 				return
 			}
 
@@ -65,7 +65,7 @@ func main() {
 	// slap plugin
 	bot.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
-			if !lib.IsCommand(e) {
+			if !lib.IsCommandMessage(e) {
 				return
 			}
 
