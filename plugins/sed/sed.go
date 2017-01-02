@@ -21,7 +21,7 @@ var (
 func Register(c *irc.Connection) {
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
-			if !lib.IsChatMessage(e) {
+			if !lib.IsPublicMessage(e) {
 				return
 			}
 			handle(e)
