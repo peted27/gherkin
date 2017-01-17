@@ -7,6 +7,7 @@ import (
 
 	"github.com/peted27/gherkin/lib"
 	"github.com/peted27/gherkin/plugins/sed"
+	"github.com/peted27/gherkin/plugins/slap"
 	"github.com/peted27/gherkin/plugins/urltitle"
 	"github.com/peted27/go-ircevent"
 )
@@ -63,16 +64,8 @@ func main() {
 		})
 
 	// slap plugin
-	bot.AddCallback("PRIVMSG",
-		func(e *irc.Event) {
-			if !lib.IsCommandMessage(e) {
-				return
-			}
-
-			if strings.HasPrefix(e.Arguments[1], "!slap") {
-				e.Connection.Action(e.Arguments[0], "slaps "+e.Nick+" around a bit with a large trout!")
-			}
-		})
+	slap.Initialise()
+	slap.Register(bot)
 
 	urltitle.Register(bot)
 	sed.Register(bot)
