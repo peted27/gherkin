@@ -7,6 +7,7 @@ import (
 
 	"github.com/peted27/gherkin/lib"
 	"github.com/peted27/gherkin/plugins/sed"
+	"github.com/peted27/gherkin/plugins/seen"
 	"github.com/peted27/gherkin/plugins/slap"
 	"github.com/peted27/gherkin/plugins/urltitle"
 	"github.com/peted27/go-ircevent"
@@ -69,6 +70,7 @@ func main() {
 
 	urltitle.Register(bot)
 	sed.Register(bot)
+	seen.Register(bot)
 
 	bot.Loop()
 
