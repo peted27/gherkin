@@ -4,7 +4,6 @@ import (
 	"errors"
 	"html"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -14,6 +13,7 @@ import (
 )
 
 var (
+	con          *irc.Connection
 	linkRE       = regexp.MustCompile(`(?:^|\s)(https?://[^#\s]+)`)
 	silenceRE    = regexp.MustCompile(`(^|\s)tg(\)|\s|$)`) // Line ignored if matched.
 	titleRE      = regexp.MustCompile(`(?i)<title[^>]*>([^<]+)<`)
@@ -21,6 +21,7 @@ var (
 )
 
 func Register(c *irc.Connection) {
+	con = c
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !lib.IsPublicMessage(e) {
@@ -50,7 +51,9 @@ func handle(e *irc.Event) {
 
 	title, err := GetTitle(link)
 	if err != nil {
-		log.Println("urltitle:", err)
+		if con.Debug {
+			con.Log.Println("plugin (urltitle): error ", err)
+		}
 		return
 	}
 
@@ -65,11 +68,17 @@ func handle(e *irc.Event) {
 func GetTitle(url string) (string, error) {
 	res, err := http.Get(url)
 	if err != nil {
+		if con.Debug {
+			con.Log.Println("plugin (urltitle): could not retrieve url ", err)
+		}
 		return "", err
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
+		if con.Debug {
+			con.Log.Println("plugin (urltitle): could not read body of response ", err)
+		}
 		return "", err
 	}
 
@@ -77,9 +86,14 @@ func GetTitle(url string) (string, error) {
 
 	title, err := Parse(string(body[:]))
 	if err != nil {
+		if con.Debug {
+			con.Log.Println("plugin (urltitle): couldnt not parse title ", err)
+		}
 		return "", err
 	}
-
+	if con.Debug {
+		con.Log.Println("plugin (urltitle): found title " + title)
+	}
 	return title, nil
 }
 

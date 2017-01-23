@@ -13,12 +13,14 @@ import (
 )
 
 var (
+	con        *irc.Connection
 	bl         = Backlog{}
 	expiration = 5 * time.Minute
 	maxLines   = 4
 )
 
 func Register(c *irc.Connection) {
+	con = c
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !lib.IsPublicMessage(e) {
@@ -157,6 +159,9 @@ func (bl *Backlog) Sed(channel, nick, pattern, replace string) string {
 	}
 	for _, line := range bl.Search(channel, nick) {
 		if strings.Contains(line, pattern) {
+			if con.Debug {
+				con.Log.Println("plugin (sed): pattern found, replacing.")
+			}
 			r := strings.Replace(line, pattern, replace, 1)
 			if len(r) > 160 {
 				r = r[:160]

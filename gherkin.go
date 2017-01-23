@@ -64,10 +64,8 @@ func main() {
 			}
 		})
 
-	// slap plugin
-	slap.Initialise()
+	// plugin registration
 	slap.Register(bot)
-
 	urltitle.Register(bot)
 	sed.Register(bot)
 	seen.Register(bot)

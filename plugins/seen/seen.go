@@ -5,8 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"errors"
-
 	"github.com/peted27/gherkin/lib"
 	"github.com/peted27/go-ircevent"
 )
@@ -51,7 +49,7 @@ func handle(e *irc.Event) {
 		target = strings.TrimSpace(target)
 	}
 
-	if t, err := db.Search(channel, target); err != nil {
+	if t, found := db.Search(channel, target); found == false {
 		e.Connection.Action(channel, target+" has not been seen")
 	} else {
 		e.Connection.Action(channel, target+" last seen "+t.Format("15:04:05 (2006-01-02) MST"))
@@ -65,7 +63,7 @@ func (l *Log) Store(channel, nick string, seen time.Time) {
 
 	if l.M == nil {
 		if con.Debug {
-			con.Log.Println("plugin (seen): creating channel map")
+			con.Log.Println("plugin (seen): creating channel map for " + channel)
 		}
 		l.M = map[string]map[string]time.Time{}
 	}
@@ -73,19 +71,19 @@ func (l *Log) Store(channel, nick string, seen time.Time) {
 	if _, p := l.M[channel]; p {
 		// update time
 		if con.Debug {
-			con.Log.Println("plugin (seen): updating seen time")
+			con.Log.Println("plugin (seen): updating seen time for " + nick)
 		}
 		l.M[channel][nick] = seen
 	} else {
 		if con.Debug {
-			con.Log.Println("plugin (seen): creating nick map")
+			con.Log.Println("plugin (seen): creating nick map for " + nick)
 		}
 		l.M[channel] = map[string]time.Time{nick: seen}
 	}
 }
 
 // Search returns backlog lines of a channel/nick.
-func (l *Log) Search(channel, nick string) (time.Time, error) {
+func (l *Log) Search(channel, nick string) (time.Time, bool) {
 	var results time.Time
 	l.Lock()
 	defer l.Unlock()
@@ -95,11 +93,11 @@ func (l *Log) Search(channel, nick string) (time.Time, error) {
 			if con.Debug {
 				con.Log.Println("plugin (seen): found result")
 			}
-			return results, nil
+			return results, true
 		}
 	}
 	if con.Debug {
 		con.Log.Println("plugin (seen): result not found")
 	}
-	return results, errors.New("Not found")
+	return results, false
 }

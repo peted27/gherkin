@@ -12,11 +12,14 @@ import (
 )
 
 var (
+	con     *irc.Connection
 	slaps   []string
 	command = "!slap"
 )
 
 func Register(c *irc.Connection) {
+	con = c
+	initialise()
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !lib.IsCommandMessage(e) {
@@ -26,7 +29,7 @@ func Register(c *irc.Connection) {
 		})
 }
 
-func Initialise() {
+func initialise() {
 	// open a file
 	if file, err := os.Open("plugins/slap/slap.txt"); err == nil {
 
@@ -37,6 +40,10 @@ func Initialise() {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			slaps = append(slaps, scanner.Text())
+
+		}
+		if con.Debug {
+			con.Log.Println("plugin (slap): loaded slaps from file")
 		}
 
 		// check for errors
@@ -48,6 +55,7 @@ func Initialise() {
 		log.Fatal(err)
 	}
 
+	// random number seed, order can be played with by changing this seed
 	rand.Seed(42)
 }
 
