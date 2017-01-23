@@ -48,12 +48,13 @@ func handle(e *irc.Event) {
 
 	if text != command {
 		target = strings.TrimPrefix(text, command+" ")
+		target = strings.TrimSpace(target)
 	}
 
 	if t, err := db.Search(channel, target); err != nil {
 		e.Connection.Action(channel, target+" has not been seen")
 	} else {
-		e.Connection.Action(channel, target+" last seen "+t.String())
+		e.Connection.Action(channel, target+" last seen "+t.Format("15:04:05 (2006-01-02) MST"))
 	}
 }
 
