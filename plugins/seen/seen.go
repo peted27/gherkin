@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	db      = Log{}
-	command = "!seen"
-	con     *irc.Connection
+	db            = Log{}
+	command       = "!seen"
+	con           *irc.Connection
+	timeConnected time.Time
 )
 
 // Log is an accessible map of channels to nick to entries.
@@ -23,6 +24,7 @@ type Log struct {
 
 func Register(c *irc.Connection) {
 	con = c
+	timeConnected = time.Now()
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !lib.IsPublicMessage(e) && !lib.IsCommandMessage(e) {
@@ -50,7 +52,7 @@ func handle(e *irc.Event) {
 	}
 
 	if t, found := db.Search(channel, target); found == false {
-		e.Connection.Action(channel, target+" has not been seen")
+		e.Connection.Action(channel, target+" has not been seen (bot online since "+timeConnected.Format("15:04:05 (2006-01-02) MST")+")")
 	} else {
 		e.Connection.Action(channel, target+" last seen "+t.Format("15:04:05 (2006-01-02) MST"))
 	}
