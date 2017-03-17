@@ -1,9 +1,9 @@
-package lib
+package gherkin
 
 import (
 	"strings"
 
-	"github.com/peted27/go-ircevent"
+	irc "github.com/peted27/go-ircevent"
 )
 
 func hasCommandPrefix(s string) bool {

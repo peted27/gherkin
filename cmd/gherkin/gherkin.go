@@ -5,12 +5,12 @@ import (
 	"flag"
 	"strings"
 
-	"github.com/peted27/gherkin/lib"
-	"github.com/peted27/gherkin/plugins/sed"
-	"github.com/peted27/gherkin/plugins/seen"
-	"github.com/peted27/gherkin/plugins/slap"
-	"github.com/peted27/gherkin/plugins/urltitle"
-	"github.com/peted27/go-ircevent"
+	"github.com/peted27/gherkin/pkg/gherkin"
+	"github.com/peted27/gherkin/pkg/plugins/sed"
+	"github.com/peted27/gherkin/pkg/plugins/seen"
+	"github.com/peted27/gherkin/pkg/plugins/slap"
+	"github.com/peted27/gherkin/pkg/plugins/urltitle"
+	irc "github.com/peted27/go-ircevent"
 )
 
 var (
@@ -55,7 +55,7 @@ func main() {
 	// pong! plugin
 	bot.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
-			if !lib.IsCommandMessage(e) {
+			if !gherkin.IsCommandMessage(e) {
 				return
 			}
 

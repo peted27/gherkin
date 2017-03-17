@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/peted27/gherkin/lib"
+	"github.com/peted27/gherkin/pkg/gherkin"
 	"github.com/peted27/go-ircevent"
 )
 
@@ -27,7 +27,7 @@ func Register(c *irc.Connection) {
 	timeConnected = time.Now()
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
-			if !lib.IsPublicMessage(e) && !lib.IsCommandMessage(e) {
+			if !gherkin.IsPublicMessage(e) && !gherkin.IsCommandMessage(e) {
 				return
 			}
 			handle(e)
