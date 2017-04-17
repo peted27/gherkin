@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/peted27/gherkin/pkg/gherkin"
+	"github.com/peted27/gherkin/pkg/plugins/autoban"
 	"github.com/peted27/gherkin/pkg/plugins/sed"
 	"github.com/peted27/gherkin/pkg/plugins/seen"
 	"github.com/peted27/gherkin/pkg/plugins/slap"
@@ -69,6 +70,7 @@ func main() {
 	urltitle.Register(bot)
 	sed.Register(bot)
 	seen.Register(bot)
+	autoban.Register(bot)
 
 	bot.Loop()
 
