@@ -89,7 +89,7 @@ func onPrivmsg(e *irc.Event) {
 func onMode(e *irc.Event) {
 	channel := e.Arguments[0]
 	mode := e.Arguments[1]
-	nick := e.Nick
+	nick := e.Arguments[2]
 
 	if mode == "+v" || mode == "+o" {
 		if _, found := db.Search(channel, nick); found == true {
