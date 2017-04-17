@@ -1,6 +1,7 @@
 package autoban
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -88,6 +89,11 @@ func onPrivmsg(e *irc.Event) {
 
 func onMode(e *irc.Event) {
 	channel := e.Arguments[0]
+
+	if !strings.HasPrefix(channel, "#") {
+		return
+	}
+	// just in case not a channel
 	mode := e.Arguments[1]
 	nick := e.Arguments[2]
 
