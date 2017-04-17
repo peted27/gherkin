@@ -27,6 +27,10 @@ func Register(c *irc.Connection) {
 		func(e *irc.Event) {
 			onJoin(e)
 		})
+	c.AddCallback("MODE",
+		func(e *irc.Event) {
+			onMode(e)
+		})
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsPublicMessage(e) && !gherkin.IsCommandMessage(e) {
@@ -41,7 +45,7 @@ func Register(c *irc.Connection) {
 			// kick and band all users who havnt spoken
 			for channel, chanMap := range db.M {
 				for nick, t := range chanMap {
-					if time.Since(t).Minutes() > 0 {
+					if time.Since(t).Minutes() >= 1 {
 						if con.Debug {
 							con.Log.Println("plugin (autoban): user (" + nick + ") banned from " + channel)
 						}
@@ -67,7 +71,7 @@ func onJoin(e *irc.Event) {
 	}
 
 	db.Store(channel, nick, time.Now())
-	con.Notice(nick, "Welcome to #"+channel+", you have 60 seconds to chat or you will be banned.")
+	con.Notice(nick, "Welcome to "+channel+", you have 60 seconds to chat or you will be banned.")
 }
 
 func onPrivmsg(e *irc.Event) {
@@ -79,6 +83,21 @@ func onPrivmsg(e *irc.Event) {
 			con.Log.Println("plugin (autoban): user (" + nick + ") acknowledged, removing from auto ban for " + channel)
 		}
 		db.Remove(channel, nick)
+	}
+}
+
+func onMode(e *irc.Event) {
+	channel := e.Arguments[0]
+	mode := e.Arguments[1]
+	nick := e.Nick
+
+	if mode == "+v" || mode == "+o" {
+		if _, found := db.Search(channel, nick); found == true {
+			if con.Debug {
+				con.Log.Println("plugin (autoban): user (" + nick + ") acknowledged, removing from auto ban for " + channel)
+			}
+			db.Remove(channel, nick)
+		}
 	}
 }
 
