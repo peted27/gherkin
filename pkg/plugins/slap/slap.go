@@ -71,6 +71,7 @@ func handle(e *irc.Event) {
 
 	if text != command {
 		target = strings.TrimPrefix(text, command+" ")
+		target = strings.TrimSpace(target)
 	}
 
 	e.Connection.Action(channel, "slaps "+target+" around a bit "+slaps[rand.Intn(len(slaps))])
