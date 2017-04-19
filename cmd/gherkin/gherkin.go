@@ -78,7 +78,7 @@ func main() {
 			}
 
 			if strings.HasPrefix(e.Arguments[1], "!uptime") {
-				e.Connection.Privmsg(e.Arguments[0], "online since "+timeInitialised.Format("15:04:05 (2006-01-02) MST"))
+				e.Connection.Action(e.Arguments[0], "running since "+timeInitialised.Format("15:04:05 (2006-01-02) MST"))
 			}
 		})
 
