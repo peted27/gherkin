@@ -14,11 +14,16 @@ var (
 	banned        = cache.Cache{}
 	con           *irc.Connection
 	timeConnected time.Time
-	command       = "autoban"
-	help          = "autobans bots from channel"
+	info          = gherkin.Plugin{
+		Name:    "autoban",
+		Command: "",
+		Help:    "autobans bots from channel",
+		Version: "0.1.0",
+	}
 )
 
-func Register(c *irc.Connection, h map[string]string) {
+func Register(c *irc.Connection, h map[string]gherkin.Plugin) {
+	h[info.Name] = info
 	con = c
 	timeConnected = time.Now()
 	c.AddCallback("JOIN",
@@ -70,7 +75,6 @@ func Register(c *irc.Connection, h map[string]string) {
 			}
 		}
 	}()
-	h[command] = help
 
 }
 

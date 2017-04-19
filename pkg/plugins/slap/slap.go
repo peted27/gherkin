@@ -12,15 +12,22 @@ import (
 )
 
 var (
-	con     *irc.Connection
-	slaps   []string
-	command = "!slap"
-	help    = "randomly slap <user>"
+	con   *irc.Connection
+	slaps []string
+
+	info = gherkin.Plugin{
+		Name:    "slap",
+		Command: "!slap <user>",
+		Help:    "randomly slap <user>",
+		Version: "0.1.0",
+	}
 )
 
-func Register(c *irc.Connection, h map[string]string) {
+func Register(c *irc.Connection, h map[string]gherkin.Plugin) {
+	h[info.Name] = info
 	con = c
 	initialise()
+
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsCommandMessage(e) {
@@ -28,7 +35,6 @@ func Register(c *irc.Connection, h map[string]string) {
 			}
 			handle(e)
 		})
-	h[command] = help
 }
 
 func initialise() {
@@ -67,12 +73,12 @@ func handle(e *irc.Event) {
 	nick := e.Nick
 	target := nick
 
-	if !strings.HasPrefix(e.Arguments[1], command) {
+	if !strings.HasPrefix(e.Arguments[1], info.Command) {
 		return
 	}
 
-	if text != command {
-		target = strings.TrimPrefix(text, command+" ")
+	if text != info.Command {
+		target = strings.TrimPrefix(text, info.Command+" ")
 		target = strings.TrimSpace(target)
 	}
 

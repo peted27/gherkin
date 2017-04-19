@@ -17,12 +17,19 @@ var (
 	bl         = Backlog{}
 	expiration = 5 * time.Minute
 	maxLines   = 4
-	command    = "s/<find>/<replace>/"
-	help       = "make substitution in previous " + string(maxLines) + " messages"
+
+	info = gherkin.Plugin{
+		Name:    "sed",
+		Command: "s/<find>/<replace>/",
+		Help:    "make substitution in previous " + string(maxLines) + " messages",
+		Version: "0.1.0",
+	}
 )
 
-func Register(c *irc.Connection, h map[string]string) {
+func Register(c *irc.Connection, h map[string]gherkin.Plugin) {
+	h[info.Name] = info
 	con = c
+
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsPublicMessage(e) {
@@ -30,7 +37,6 @@ func Register(c *irc.Connection, h map[string]string) {
 			}
 			handle(e)
 		})
-	h[command] = help
 }
 
 func handle(e *irc.Event) {

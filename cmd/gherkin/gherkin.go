@@ -4,26 +4,27 @@ import (
 	"crypto/tls"
 	"flag"
 	"strings"
-	"time"
 
 	"github.com/peted27/gherkin/pkg/gherkin"
 	"github.com/peted27/gherkin/pkg/plugins/autoban"
+	"github.com/peted27/gherkin/pkg/plugins/pinger"
 	"github.com/peted27/gherkin/pkg/plugins/sed"
 	"github.com/peted27/gherkin/pkg/plugins/seen"
 	"github.com/peted27/gherkin/pkg/plugins/slap"
+	"github.com/peted27/gherkin/pkg/plugins/uptime"
 	"github.com/peted27/gherkin/pkg/plugins/urltitle"
 	irc "github.com/peted27/go-ircevent"
 )
 
 var (
-	host        = flag.String("host", "irc.example.com", "Server host[:port]")
-	ssl         = flag.Bool("ssl", true, "Enable SSL")
-	nick        = flag.String("nick", "goircbot", "Bot nick")
-	ident       = flag.String("ident", "goircbot", "Bot ident")
-	channels    = flag.String("channels", "", "Channels to join (separated by comma)")
-	debug       = flag.Bool("debug", false, "Enable debugging output")
-	helpStrings = map[string]string{}
-	version     = "0.9.0"
+	host     = flag.String("host", "irc.example.com", "Server host[:port]")
+	ssl      = flag.Bool("ssl", true, "Enable SSL")
+	nick     = flag.String("nick", "goircbot", "Bot nick")
+	ident    = flag.String("ident", "goircbot", "Bot ident")
+	channels = flag.String("channels", "", "Channels to join (separated by comma)")
+	debug    = flag.Bool("debug", false, "Enable debugging output")
+	plugins  = map[string]gherkin.Plugin{}
+	version  = "0.9.1"
 )
 
 func main() {
@@ -56,35 +57,19 @@ func main() {
 
 	}
 
-	// pong! plugin
-	helpStrings["!ping"] = "auto reply with !pong"
 	bot.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsCommandMessage(e) {
 				return
 			}
 
-			if strings.HasPrefix(e.Arguments[1], "!ping") {
-				e.Connection.Privmsg(e.Arguments[0], "pong!")
+			if strings.HasPrefix(e.Arguments[1], "!help") {
+				for _, p := range plugins {
+					e.Connection.Privmsg(e.Nick, gherkin.MakeHelpString(p))
+				}
 			}
 		})
 
-	// !uptime plugin
-	timeInitialised := time.Now()
-	helpStrings["!uptime"] = "display time since bot was launched"
-	bot.AddCallback("PRIVMSG",
-		func(e *irc.Event) {
-			if !gherkin.IsCommandMessage(e) {
-				return
-			}
-
-			if strings.HasPrefix(e.Arguments[1], "!uptime") {
-				e.Connection.Action(e.Arguments[0], "running since "+timeInitialised.Format("15:04:05 (2006-01-02) MST"))
-			}
-		})
-
-	// !version plugin
-	helpStrings["!version"] = "display bot version"
 	bot.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsCommandMessage(e) {
@@ -96,27 +81,14 @@ func main() {
 			}
 		})
 
-	// !help
-	helpStrings["!help"] = "print this message"
-	bot.AddCallback("PRIVMSG",
-		func(e *irc.Event) {
-			if !gherkin.IsCommandMessage(e) {
-				return
-			}
-
-			if strings.HasPrefix(e.Arguments[1], "!help") {
-				for h, c := range helpStrings {
-					e.Connection.Privmsg(e.Nick, gherkin.MakeHelpString(h, c))
-				}
-			}
-		})
-
 	// plugin registration
-	slap.Register(bot, helpStrings)
-	urltitle.Register(bot, helpStrings)
-	sed.Register(bot, helpStrings)
-	seen.Register(bot, helpStrings)
-	autoban.Register(bot, helpStrings)
+	uptime.Register(bot, plugins)
+	pinger.Register(bot, plugins)
+	slap.Register(bot, plugins)
+	urltitle.Register(bot, plugins)
+	sed.Register(bot, plugins)
+	seen.Register(bot, plugins)
+	autoban.Register(bot, plugins)
 
 	bot.Loop()
 

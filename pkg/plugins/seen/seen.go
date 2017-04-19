@@ -11,15 +11,22 @@ import (
 
 var (
 	db            = cache.Cache{}
-	command       = "!seen"
-	help          = "last time <user> was seen"
 	con           *irc.Connection
 	timeConnected time.Time
+
+	info = gherkin.Plugin{
+		Name:    "seen",
+		Command: "!seen <user>",
+		Help:    "last time <user> was seen",
+		Version: "0.1.0",
+	}
 )
 
-func Register(c *irc.Connection, h map[string]string) {
+func Register(c *irc.Connection, h map[string]gherkin.Plugin) {
+	h[info.Name] = info
 	con = c
 	timeConnected = time.Now()
+
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsPublicMessage(e) && !gherkin.IsCommandMessage(e) {
@@ -27,7 +34,6 @@ func Register(c *irc.Connection, h map[string]string) {
 			}
 			handle(e)
 		})
-	h[command] = help
 }
 
 func handle(e *irc.Event) {
@@ -41,12 +47,12 @@ func handle(e *irc.Event) {
 		con.Log.Println("plugin (seen): user (" + nick + ") updating time on " + channel)
 	}
 
-	if !strings.HasPrefix(e.Arguments[1], command) {
+	if !strings.HasPrefix(e.Arguments[1], info.Command) {
 		return
 	}
 
-	if text != command {
-		target = strings.TrimPrefix(text, command+" ")
+	if text != info.Command {
+		target = strings.TrimPrefix(text, info.Command+" ")
 		target = strings.TrimSpace(target)
 	}
 

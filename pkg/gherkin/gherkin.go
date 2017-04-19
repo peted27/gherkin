@@ -3,8 +3,17 @@ package gherkin
 import (
 	"strings"
 
+	"fmt"
+
 	irc "github.com/peted27/go-ircevent"
 )
+
+type Plugin struct {
+	Name    string
+	Command string
+	Help    string
+	Version string
+}
 
 func hasCommandPrefix(s string) bool {
 	if strings.HasPrefix(s, ":") || strings.HasPrefix(s, "!") {
@@ -39,6 +48,6 @@ func IsPublicMessage(e *irc.Event) bool {
 }
 
 // MakeHelpString creates a printable line for displaying help
-func MakeHelpString(command, info string) string {
-	return command + ": " + info
+func MakeHelpString(p Plugin) string {
+	return fmt.Sprintf("%10s : %7s - %20s - %s", p.Name, p.Version, p.Command, p.Help)
 }

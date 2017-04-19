@@ -18,12 +18,19 @@ var (
 	silenceRE    = regexp.MustCompile(`(^|\s)tg(\)|\s|$)`) // Line ignored if matched.
 	titleRE      = regexp.MustCompile(`(?i)<title[^>]*>([^<]+)<`)
 	whitespaceRE = regexp.MustCompile(`\s+`)
-	command      = "urltitle"
-	help         = "automatically retrieves url titles"
+
+	info = gherkin.Plugin{
+		Name:    "urltitle",
+		Command: "",
+		Help:    "automatically retrieves url titles",
+		Version: "0.1.0",
+	}
 )
 
-func Register(c *irc.Connection, h map[string]string) {
+func Register(c *irc.Connection, h map[string]gherkin.Plugin) {
+	h[info.Name] = info
 	con = c
+
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsPublicMessage(e) {
@@ -31,7 +38,6 @@ func Register(c *irc.Connection, h map[string]string) {
 			}
 			handle(e)
 		})
-	h[command] = help
 }
 
 func handle(e *irc.Event) {
