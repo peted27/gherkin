@@ -23,6 +23,7 @@ var (
 	channels    = flag.String("channels", "", "Channels to join (separated by comma)")
 	debug       = flag.Bool("debug", false, "Enable debugging output")
 	helpStrings = map[string]string{}
+	version     = "0.9.0"
 )
 
 func main() {
@@ -79,6 +80,19 @@ func main() {
 
 			if strings.HasPrefix(e.Arguments[1], "!uptime") {
 				e.Connection.Action(e.Arguments[0], "running since "+timeInitialised.Format("15:04:05 (2006-01-02) MST"))
+			}
+		})
+
+	// !version plugin
+	helpStrings["!version"] = "display bot version"
+	bot.AddCallback("PRIVMSG",
+		func(e *irc.Event) {
+			if !gherkin.IsCommandMessage(e) {
+				return
+			}
+
+			if strings.HasPrefix(e.Arguments[1], "!version") {
+				e.Connection.Action(e.Arguments[0], "running version "+version)
 			}
 		})
 
