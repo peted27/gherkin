@@ -12,11 +12,12 @@ import (
 var (
 	db            = cache.Cache{}
 	command       = "!seen"
+	help          = "last time <user> was seen"
 	con           *irc.Connection
 	timeConnected time.Time
 )
 
-func Register(c *irc.Connection) {
+func Register(c *irc.Connection, h map[string]string) {
 	con = c
 	timeConnected = time.Now()
 	c.AddCallback("PRIVMSG",
@@ -26,6 +27,7 @@ func Register(c *irc.Connection) {
 			}
 			handle(e)
 		})
+	h[command] = help
 }
 
 func handle(e *irc.Event) {

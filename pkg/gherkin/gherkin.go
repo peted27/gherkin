@@ -37,3 +37,8 @@ func IsPublicMessage(e *irc.Event) bool {
 	}
 	return true
 }
+
+// MakeHelpString creates a printable line for displaying help
+func MakeHelpString(command, info string) string {
+	return command + ": " + info
+}

@@ -17,9 +17,11 @@ var (
 	bl         = Backlog{}
 	expiration = 5 * time.Minute
 	maxLines   = 4
+	command    = "s/<find>/<replace>/"
+	help       = "make substitution in previous " + string(maxLines) + " messages"
 )
 
-func Register(c *irc.Connection) {
+func Register(c *irc.Connection, h map[string]string) {
 	con = c
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
@@ -28,6 +30,7 @@ func Register(c *irc.Connection) {
 			}
 			handle(e)
 		})
+	h[command] = help
 }
 
 func handle(e *irc.Event) {

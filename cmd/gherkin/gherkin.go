@@ -16,12 +16,13 @@ import (
 )
 
 var (
-	host     = flag.String("host", "irc.example.com", "Server host[:port]")
-	ssl      = flag.Bool("ssl", true, "Enable SSL")
-	nick     = flag.String("nick", "goircbot", "Bot nick")
-	ident    = flag.String("ident", "goircbot", "Bot ident")
-	channels = flag.String("channels", "", "Channels to join (separated by comma)")
-	debug    = flag.Bool("debug", false, "Enable debugging output")
+	host        = flag.String("host", "irc.example.com", "Server host[:port]")
+	ssl         = flag.Bool("ssl", true, "Enable SSL")
+	nick        = flag.String("nick", "goircbot", "Bot nick")
+	ident       = flag.String("ident", "goircbot", "Bot ident")
+	channels    = flag.String("channels", "", "Channels to join (separated by comma)")
+	debug       = flag.Bool("debug", false, "Enable debugging output")
+	helpStrings = map[string]string{}
 )
 
 func main() {
@@ -55,6 +56,7 @@ func main() {
 	}
 
 	// pong! plugin
+	helpStrings["!ping"] = "auto reply with !pong"
 	bot.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsCommandMessage(e) {
@@ -68,6 +70,7 @@ func main() {
 
 	// !uptime plugin
 	timeInitialised := time.Now()
+	helpStrings["!uptime"] = "display time since bot was launched"
 	bot.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
 			if !gherkin.IsCommandMessage(e) {
@@ -79,12 +82,27 @@ func main() {
 			}
 		})
 
+	// !help
+	helpStrings["!help"] = "print this message"
+	bot.AddCallback("PRIVMSG",
+		func(e *irc.Event) {
+			if !gherkin.IsCommandMessage(e) {
+				return
+			}
+
+			if strings.HasPrefix(e.Arguments[1], "!help") {
+				for h, c := range helpStrings {
+					e.Connection.Privmsg(e.Nick, gherkin.MakeHelpString(h, c))
+				}
+			}
+		})
+
 	// plugin registration
-	slap.Register(bot)
-	urltitle.Register(bot)
-	sed.Register(bot)
-	seen.Register(bot)
-	autoban.Register(bot)
+	slap.Register(bot, helpStrings)
+	urltitle.Register(bot, helpStrings)
+	sed.Register(bot, helpStrings)
+	seen.Register(bot, helpStrings)
+	autoban.Register(bot, helpStrings)
 
 	bot.Loop()
 

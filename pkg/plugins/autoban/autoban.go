@@ -14,9 +14,11 @@ var (
 	banned        = cache.Cache{}
 	con           *irc.Connection
 	timeConnected time.Time
+	command       = "autoban"
+	help          = "autobans bots from channel"
 )
 
-func Register(c *irc.Connection) {
+func Register(c *irc.Connection, h map[string]string) {
 	con = c
 	timeConnected = time.Now()
 	c.AddCallback("JOIN",
@@ -68,6 +70,8 @@ func Register(c *irc.Connection) {
 			}
 		}
 	}()
+	h[command] = help
+
 }
 
 func onJoin(e *irc.Event) {

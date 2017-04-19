@@ -15,9 +15,10 @@ var (
 	con     *irc.Connection
 	slaps   []string
 	command = "!slap"
+	help    = "randomly slap <user>"
 )
 
-func Register(c *irc.Connection) {
+func Register(c *irc.Connection, h map[string]string) {
 	con = c
 	initialise()
 	c.AddCallback("PRIVMSG",
@@ -27,6 +28,7 @@ func Register(c *irc.Connection) {
 			}
 			handle(e)
 		})
+	h[command] = help
 }
 
 func initialise() {

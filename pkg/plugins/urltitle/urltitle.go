@@ -18,9 +18,11 @@ var (
 	silenceRE    = regexp.MustCompile(`(^|\s)tg(\)|\s|$)`) // Line ignored if matched.
 	titleRE      = regexp.MustCompile(`(?i)<title[^>]*>([^<]+)<`)
 	whitespaceRE = regexp.MustCompile(`\s+`)
+	command      = "urltitle"
+	help         = "automatically retrieves url titles"
 )
 
-func Register(c *irc.Connection) {
+func Register(c *irc.Connection, h map[string]string) {
 	con = c
 	c.AddCallback("PRIVMSG",
 		func(e *irc.Event) {
@@ -29,6 +31,7 @@ func Register(c *irc.Connection) {
 			}
 			handle(e)
 		})
+	h[command] = help
 }
 
 func handle(e *irc.Event) {
