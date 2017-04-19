@@ -17,8 +17,8 @@ var (
 
 	info = gherkin.Plugin{
 		Name:    "slap",
-		Command: "!slap <user>",
-		Help:    "randomly slap <user>",
+		Command: "!slap",
+		Help:    "!slap <user>, randomly slap <user>",
 		Version: "0.1.0",
 	}
 )

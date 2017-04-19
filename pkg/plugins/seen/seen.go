@@ -16,8 +16,8 @@ var (
 
 	info = gherkin.Plugin{
 		Name:    "seen",
-		Command: "!seen <user>",
-		Help:    "last time <user> was seen",
+		Command: "!seen",
+		Help:    "!seen <user>, last time <user> was seen",
 		Version: "0.1.0",
 	}
 )
