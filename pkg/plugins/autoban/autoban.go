@@ -61,7 +61,7 @@ func Register(c *irc.Connection) {
 						if con.Debug {
 							con.Log.Println("plugin (autoban): user (" + nick + ") un-banned from " + channel)
 						}
-						joined.Remove(channel, nick)
+						banned.Remove(channel, nick)
 						c.Mode(channel, "-b "+nick)
 					}
 				}
