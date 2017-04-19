@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"strings"
+	"time"
 
 	"github.com/peted27/gherkin/pkg/gherkin"
 	"github.com/peted27/gherkin/pkg/plugins/autoban"
@@ -62,6 +63,19 @@ func main() {
 
 			if strings.HasPrefix(e.Arguments[1], "!ping") {
 				e.Connection.Privmsg(e.Arguments[0], "pong!")
+			}
+		})
+
+	// !uptime plugin
+	timeInitialised := time.Now()
+	bot.AddCallback("PRIVMSG",
+		func(e *irc.Event) {
+			if !gherkin.IsCommandMessage(e) {
+				return
+			}
+
+			if strings.HasPrefix(e.Arguments[1], "!uptime") {
+				e.Connection.Privmsg(e.Arguments[0], "online since "+timeInitialised.Format("15:04:05 (2006-01-02) MST"))
 			}
 		})
 
